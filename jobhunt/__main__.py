@@ -101,6 +101,14 @@ async def _run(args: argparse.Namespace) -> None:
         logger.info("── Processing location: %s ──────────────────────────", label.upper())
 
         raw = await _fetch_for_location(loc, args)
+
+        # Drop overly senior titles if this location has exclusions defined
+        exclude_kws = [k.lower() for k in loc.get("exclude_title_keywords", [])]
+        if exclude_kws:
+            before = len(raw)
+            raw = [p for p in raw if not any(kw in p.title.lower() for kw in exclude_kws)]
+            logger.info("[%s] Dropped %d senior/excluded titles", label, before - len(raw))
+
         normalized = normalize(raw)
         deduped = dedupe(normalized)
         logger.info("[%s] After normalize+dedupe: %d postings", label, len(deduped))

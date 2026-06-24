@@ -48,11 +48,25 @@ search:
 locations:
   - label: dallas
     location: "Dallas, TX"
-    is_remote: true          # also surface remote postings
+    is_remote: true
 
   - label: austin
     location: "Austin, TX"
     is_remote: true
+
+  - label: remote
+    location: "United States"
+    is_remote: true
+    exclude_title_keywords:   # drop overly senior titles for remote search
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
 
 # ── ATS keyword filter (applied to title of every posting) ───────────────────
 ats_title_keywords:
@@ -84,7 +98,7 @@ companies: []
 # ── Digest settings ───────────────────────────────────────────────────────────
 digest:
   top_n: 30                 # how many jobs to include per digest
-  min_score: 40             # drop postings below this score
+  min_score: 60             # drop postings below this score
   output_dir: "output"      # relative to project root
 
 # ── LLM settings ─────────────────────────────────────────────────────────────
