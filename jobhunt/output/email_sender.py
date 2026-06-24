@@ -1,67 +1,63 @@
-"""Optional SMTP email sender.
+"""Email sender via Resend API (https://resend.com).
 
-Sends the Markdown digest as plain text + HTML (Markdown rendered to HTML via
-a simple conversion).  Skips silently if SMTP is not configured.
+Free tier: 3,000 emails/month.  Requires only RESEND_API_KEY + EMAIL_TO in .env.
 """
 
 from __future__ import annotations
 
 import logging
 import re
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from pathlib import Path
+
+import httpx
 
 from jobhunt.config import cfg
 
 logger = logging.getLogger(__name__)
 
+_RESEND_URL = "https://api.resend.com/emails"
+
 
 def _md_to_html(md: str) -> str:
-    """Minimal Markdown → HTML conversion (no external dep)."""
     html = md
-    # Headers
     html = re.sub(r"^## (.+)$", r"<h2>\1</h2>", html, flags=re.MULTILINE)
     html = re.sub(r"^# (.+)$", r"<h1>\1</h1>", html, flags=re.MULTILINE)
-    # Bold
     html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
-    # Inline code
     html = re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
-    # Links
     html = re.sub(r"\[(.+?)\]\((.+?)\)", r'<a href="\2">\1</a>', html)
-    # List items
     html = re.sub(r"^- (.+)$", r"<li>\1</li>", html, flags=re.MULTILINE)
-    # Horizontal rule
     html = html.replace("---", "<hr>")
-    # Line breaks → <br> (preserve paragraph structure)
     html = html.replace("\n\n", "</p><p>").replace("\n", "<br>")
     return f"<html><body><p>{html}</p></body></html>"
 
 
 def send_email(md_path: Path) -> None:
-    """Send the digest by email.  No-ops if SMTP is not configured."""
-    if not cfg.email_configured():
-        logger.info("SMTP not configured — skipping email")
+    """Send digest via Resend. No-ops if RESEND_API_KEY or EMAIL_TO is not set."""
+    api_key = cfg.resend_api_key
+    to = cfg.email_to
+
+    if not api_key or not to:
+        logger.info("Resend not configured — skipping email (set RESEND_API_KEY + EMAIL_TO in .env)")
         return
 
-    subject = f"Job Digest {md_path.stem.replace('digest_', '')}"
+    subject = "Job Digest " + md_path.stem.replace("digest_", "").replace("_", " ").title()
     body_md = md_path.read_text(encoding="utf-8")
     body_html = _md_to_html(body_md)
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = cfg.email_from
-    msg["To"] = cfg.email_to
-    msg.attach(MIMEText(body_md, "plain", "utf-8"))
-    msg.attach(MIMEText(body_html, "html", "utf-8"))
-
     try:
-        with smtplib.SMTP(cfg.smtp_host, cfg.smtp_port) as server:
-            server.ehlo()
-            server.starttls()
-            server.login(cfg.smtp_user, cfg.smtp_password)
-            server.sendmail(cfg.email_from, cfg.email_to, msg.as_string())
-        logger.info("Digest emailed to %s", cfg.email_to)
+        resp = httpx.post(
+            _RESEND_URL,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "from": "Job Hunt <onboarding@resend.dev>",
+                "to": [to],
+                "subject": subject,
+                "html": body_html,
+                "text": body_md,
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+        logger.info("Digest emailed to %s via Resend (id: %s)", to, resp.json().get("id"))
     except Exception as exc:
-        logger.error("Failed to send email: %s", exc)
+        logger.error("Failed to send email via Resend: %s", exc)
