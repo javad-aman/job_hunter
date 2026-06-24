@@ -49,10 +49,30 @@ locations:
   - label: dallas
     location: "Dallas, TX"
     is_remote: true
+    exclude_title_keywords:
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
 
   - label: austin
     location: "Austin, TX"
     is_remote: true
+    exclude_title_keywords:
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
 
   - label: remote
     location: "United States"
