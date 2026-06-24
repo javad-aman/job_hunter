@@ -45,9 +45,10 @@ def send_email(md_path: Path) -> None:
     body_html = _md_to_html(body_md)
 
     try:
+        api_key_str = api_key.decode() if isinstance(api_key, bytes) else str(api_key)
         resp = httpx.post(
             _RESEND_URL,
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            headers={"Authorization": f"Bearer {api_key_str}", "Content-Type": "application/json"},
             json={
                 "from": "Job Hunt <onboarding@resend.dev>",
                 "to": to,
