@@ -4,7 +4,7 @@ on:
   schedule:
     # 8:00 AM CST = 14:00 UTC
     - cron: "0 14 * * *"
-  workflow_dispatch:   # allow manual trigger from the Actions tab
+  workflow_dispatch:
 
 jobs:
   run-digest:
@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
         with:
@@ -21,6 +23,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Restore seen-jobs store
+        run: |
+          mkdir -p data
+          if [ -f data/seen_jobs.sqlite ]; then
+            echo "seen_jobs.sqlite already present (checked out from repo)"
+          else
+            echo "No seen_jobs.sqlite found — first run"
+          fi
+
       - name: Run jobhunt
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -29,6 +40,14 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: python -m jobhunt --no-ats
+
+      - name: Commit updated seen-jobs store
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/seen_jobs.sqlite
+          git diff --staged --quiet && echo "No new seen jobs to commit" || git commit -m "chore: update seen_jobs store [skip ci]"
+          git push
 
       - name: Upload digest artifact
         if: always()
