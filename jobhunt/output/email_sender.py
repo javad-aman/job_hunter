@@ -34,7 +34,7 @@ def _md_to_html(md: str) -> str:
 def send_email(md_path: Path) -> None:
     """Send digest via Resend. No-ops if RESEND_API_KEY or EMAIL_TO is not set."""
     api_key = cfg.resend_api_key
-    to = cfg.email_to
+    to = [addr.strip() for addr in cfg.email_to.split(",") if addr.strip()]
 
     if not api_key or not to:
         logger.info("Resend not configured — skipping email (set RESEND_API_KEY + EMAIL_TO in .env)")
@@ -50,14 +50,18 @@ def send_email(md_path: Path) -> None:
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={
                 "from": "Job Hunt <onboarding@resend.dev>",
-                "to": [to],
+                "to": to,
                 "subject": subject,
                 "html": body_html,
                 "text": body_md,
             },
             timeout=15,
         )
-        resp.raise_for_status()
+        if not resp.is_success:
+            logger.error("Resend error %s: %s", resp.status_code, resp.text)
+            resp.raise_for_status()
         logger.info("Digest emailed to %s via Resend (id: %s)", to, resp.json().get("id"))
+    except httpx.HTTPStatusError:
+        pass  # already logged above
     except Exception as exc:
         logger.error("Failed to send email via Resend: %s", exc)
