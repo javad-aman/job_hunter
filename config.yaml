@@ -1,0 +1,95 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# jobhunt/config.yaml  — fill in YOUR_* placeholders before running
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Your profile (the LLM uses this as the scoring rubric) ───────────────────
+my_profile: |
+  Dornaz Niknezhad is a UX / Product Designer with 5+ years of experience
+  building digital products across enterprise embedded software, consumer health
+  tech, regulated healthcare, and IoT/HMI systems. She is based in Dallas, TX
+  and is a U.S. citizen.
+
+  She leads end-to-end UX work: discovery workshops, user interviews, contextual
+  field research, behavioral data analysis, journey mapping, wireframing,
+  high-fidelity Figma design, design systems, and component libraries. She built
+  a full Figma design system from scratch at NTX Embedded and has shipped
+  multimodal HMI and IoT control interfaces validated on-site with operators.
+  Her M.A. thesis (NURA) applied mixed-methods behavioral research — synthesizing
+  data from Eight Sleep and WHOOP and validating with 50+ usability test
+  participants — to design an intelligent sleep ecosystem.
+
+  She uses Claude and Figma Make daily for rapid prototyping, research synthesis,
+  and exploratory iteration. She holds an M.A. in Interaction Design from the
+  University of North Texas and a Nielsen Norman Group (NNG) UX Certificate.
+
+  Target roles: UX Designer, Product Designer, UX Researcher, UI/UX Designer —
+  at the mid-to-senior level. She is open to enterprise SaaS, health tech,
+  consumer apps, and IoT/embedded products. She is NOT interested in pure
+  graphic-design or print roles, agency work focused on marketing creative, or
+  roles with no user research component. She prefers in-house product teams.
+  Location: Dallas, TX area; open to hybrid or remote.
+
+# ── Search terms (shared across all locations) ────────────────────────────────
+search:
+  terms:
+    - "UX designer"
+    - "product designer"
+    - "UX research"
+    - "UI UX designer"
+  hours_old: 168            # 7-day window — wider = more results
+  results_wanted: 100       # per board per term
+  boards:
+    - indeed
+    # glassdoor: currently returns 400 (location API blocked)
+    # google: currently returns 0 results (bot detection)
+    # linkedin: excluded by design (rate-limited / ToS)
+
+# ── Locations — one digest file written per entry ────────────────────────────
+locations:
+  - label: dallas
+    location: "Dallas, TX"
+    is_remote: true          # also surface remote postings
+
+  - label: austin
+    location: "Austin, TX"
+    is_remote: true
+
+# ── ATS keyword filter (applied to title of every posting) ───────────────────
+ats_title_keywords:
+  - designer
+  - " ux"
+  - "ux "
+  - " ui"
+  - "ui "
+  - "user experience"
+  - "user interface"
+  - "interaction design"
+  - "visual design"
+  - "product design"
+  - "ux research"
+  - "user research"
+
+# ── Company shortlist ─────────────────────────────────────────────────────────
+# ats: greenhouse | lever | ashby
+# token: the slug used in the ATS URL (see README for how to find it)
+companies: []
+  # Add companies when you have a shortlist, e.g.:
+  # - name: "Figma"
+  #   ats: greenhouse
+  #   token: figma
+  # - name: "Notion"
+  #   ats: lever
+  #   token: notion
+
+# ── Digest settings ───────────────────────────────────────────────────────────
+digest:
+  top_n: 30                 # how many jobs to include per digest
+  min_score: 40             # drop postings below this score
+  output_dir: "output"      # relative to project root
+
+# ── LLM settings ─────────────────────────────────────────────────────────────
+llm:
+  model: "claude-haiku-4-5-20251001"   # haiku is fast + cheap for scoring
+  max_tokens: 400
+  batch_size: 10            # postings scored per API call
+  description_max_chars: 3000  # truncate long descriptions before sending

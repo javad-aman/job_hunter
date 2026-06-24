@@ -1,0 +1,17 @@
+# Core
+python-jobspy>=0.1.0
+anthropic>=0.28.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+httpx>=0.27.0          # async HTTP for ATS pollers
+tenacity>=8.3.0        # retries
+
+# Data
+pandas>=2.2.0          # used by jobspy + CSV output
+
+# Optional email
+# (stdlib smtplib is used; no extra dep needed)
+
+# Dev / type stubs (optional)
+# mypy>=1.10.0
+# types-PyYAML>=6.0
