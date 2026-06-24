@@ -48,7 +48,7 @@ search:
 locations:
   - label: dallas
     location: "Dallas, TX"
-    is_remote: true
+    is_remote: false    # include in-person and hybrid
     exclude_title_keywords:
       - lead
       - director
