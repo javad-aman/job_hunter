@@ -1,0 +1,118 @@
+# =============================================================================
+# DFW employer watchlist  —  direct ATS polling   (50+ companies)
+# =============================================================================
+# Optional precision layer for the job-discovery system. Breadth still comes
+# from JobSpy (Indeed + Google Jobs) + hiring.cafe; this file is the
+# "catch it the instant it posts" layer for employers you care about.
+#
+# Verified live: June 2026. `verified: true` = endpoint confirmed against the
+# live board. Re-check periodically — companies migrate ATS.
+#
+# -----------------------------------------------------------------------------
+# Endpoint patterns:
+#   greenhouse : https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true        (GET)
+#   lever      : https://api.lever.co/v0/postings/{token}?mode=json                          (GET)
+#   ashby      : https://api.ashbyhq.com/posting-api/job-board/{token}                       (GET)
+#   workday    : https://{host}/wday/cxs/{tenant}/{site}/jobs                                 (POST)
+#                body: {"appliedFacets":{},"limit":20,"offset":0,"searchText":"designer"}
+#   proprietary/taleo/icims/phenom : no clean public JSON -> cover via hiring.cafe, NOT here.
+# -----------------------------------------------------------------------------
+
+
+# ============================================================================
+# A) POLLABLE — VERIFIED  (Workday / Lever / Ashby)
+# ============================================================================
+companies:
+
+  # ---- Workday ----
+  - {name: "AT&T",            city: Dallas,     ats: workday, tenant: att,          host: att.wd1.myworkdayjobs.com,          site: ATTGeneral,            verified: true}
+  - {name: "Caterpillar",     city: Irving,     ats: workday, tenant: cat,          host: cat.wd5.myworkdayjobs.com,          site: CaterpillarCareers,    verified: true}
+  - {name: "Capital One",     city: Plano,      ats: workday, tenant: capitalone,   host: capitalone.wd12.myworkdayjobs.com,  site: Capital_One,           verified: true}
+  - {name: "McKesson",        city: Irving,     ats: workday, tenant: mckesson,     host: mckesson.wd3.myworkdayjobs.com,     site: External_Careers,      verified: true}
+  - {name: "Alkami",          city: Plano,      ats: workday, tenant: alkami,       host: alkami.wd12.myworkdayjobs.com,      site: Alkami,                verified: true,  note: "posts Product Designer roles"}
+  - {name: "Copart",          city: Dallas,     ats: workday, tenant: copart,       host: copart.wd12.myworkdayjobs.com,      site: Copart,                verified: true,  note: "posts Product Design roles"}
+  - {name: "Kimberly-Clark",  city: Irving,     ats: workday, tenant: kimberlyclark, host: kimberlyclark.wd1.myworkdayjobs.com, site: GLOBAL,               verified: true}
+  - {name: "Vistra",          city: Irving,     ats: workday, tenant: vst,          host: vst.wd5.myworkdayjobs.com,          site: vistra_careers,        verified: true}
+  - {name: "GameStop",        city: Grapevine,  ats: workday, tenant: gamestop,     host: gamestop.wd5.myworkdayjobs.com,     site: Careers,               verified: true}
+  - {name: "Topgolf",         city: Dallas,     ats: workday, tenant: topgolf,      host: topgolf.wd501.myworkdayjobs.com,    site: TopgolfCareers,        verified: true}
+  - {name: "Atmos Energy",    city: Dallas,     ats: workday, tenant: atmosenergy,  host: atmosenergy.wd5.myworkdayjobs.com,  site: External_Career_Site,  verified: true}
+  - {name: "RTX (Raytheon)",  city: McKinney,   ats: workday, tenant: globalhr,     host: globalhr.wd5.myworkdayjobs.com,     site: REC_RTX_Ext_Gateway,   verified: true,  note: "RTX HQ in VA; large McKinney/Richardson presence"}
+  - {name: "Cinemark",        city: Plano,      ats: workday, tenant: cinemark,     host: cinemark.wd1.myworkdayjobs.com,     site: cinemark,              verified: true}
+
+  # ---- Lever ----
+  - {name: "Match Group",     city: Dallas,     ats: lever,  token: matchgroup, verified: true, note: "Tinder/Hinge/Match; has a Design org; many roles NYC/LA/remote"}
+
+  # ---- Ashby ----
+  - {name: "Bestow",          city: Dallas,     ats: ashby,  token: bestow,     verified: true, note: "insurtech; dedicated design team"}
+
+
+# ============================================================================
+# B) PROPRIETARY — VERIFIED  (custom/Taleo/Phenom; NO clean JSON)
+# Cover these via the hiring.cafe / aggregator layer, not direct polling.
+# ============================================================================
+proprietary:
+  - {name: "Toyota Motor N.A.",     city: Plano,       site: careers.toyota.com}
+  - {name: "American Airlines",     city: "Fort Worth", site: jobs.aa.com,                 note: "regional entity uses Workday: aaregional.wd5"}
+  - {name: "Southwest Airlines",    city: Dallas,      site: careers.southwestair.com}
+  - {name: "Charles Schwab",        city: Westlake,    site: schwabjobs.com}
+  - {name: "Fidelity Investments",  city: Westlake,    site: jobs.fidelity.com}
+  - {name: "Texas Instruments",     city: Dallas,      site: careers.ti.com}
+  - {name: "PepsiCo / Frito-Lay",   city: Plano,       site: pepsicojobs.com}
+  - {name: "Lockheed Martin",       city: "Fort Worth", site: lockheedmartin.com/careers}
+  - {name: "Bell Textron",          city: "Fort Worth", site: textron.taleo.net,           note: "Taleo"}
+  - {name: "CBRE",                  city: Dallas,      site: careers.cbre.com}
+  - {name: "Tenet Healthcare",      city: Dallas,      site: jobs.tenethealth.com}
+  - {name: "Keurig Dr Pepper",      city: Frisco,      site: careers.keurigdrpepper.com}
+  - {name: "Builders FirstSource",  city: Irving,      site: careers.bldr.com}
+  - {name: "Comerica",              city: Dallas,      site: careers.comerica.com}
+
+
+# ============================================================================
+# C) CANDIDATES — NOT YET VERIFIED  (run the 30-second finder, then promote)
+# Finder: open the careers page, watch where "Apply" sends you:
+#   boards.greenhouse.io/X | jobs.lever.co/X | jobs.ashbyhq.com/X
+#   X.wdN.myworkdayjobs.com/SITE   (capture BOTH tenant and /SITE)
+# Then open the API URL in a browser; JSON back = good token.
+# `ats_guess` is a hint only — verify before trusting.
+# ============================================================================
+candidates:
+  - {name: "Sabre",                  city: Southlake,   ats_guess: workday,     verified: false}
+  - {name: "NTT Data",               city: Plano,       ats_guess: workday,     verified: false}
+  - {name: "RealPage",               city: Richardson,  ats_guess: workday,     verified: false}
+  - {name: "Thryv",                  city: Grapevine,   ats_guess: unknown,     verified: false}
+  - {name: "Jacobs Solutions",       city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Fluor",                  city: Irving,      ats_guess: workday,     verified: false}
+  - {name: "Celanese",               city: Irving,      ats_guess: successfactors, verified: false}
+  - {name: "HF Sinclair",            city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Energy Transfer",        city: Dallas,      ats_guess: unknown,     verified: false}
+  - {name: "Trinity Industries",     city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Commercial Metals (CMC)", city: Irving,     ats_guess: workday,     verified: false}
+  - {name: "Globe Life",             city: McKinney,    ats_guess: workday,     verified: false}
+  - {name: "Baylor Scott & White",   city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Children's Health",      city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Texas Health Resources", city: Arlington,   ats_guess: workday,     verified: false}
+  - {name: "Galderma",               city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "7-Eleven",               city: Irving,      ats_guess: workday,     verified: false}
+  - {name: "Michaels Stores",        city: Irving,      ats_guess: workday,     verified: false}
+  - {name: "Neiman Marcus",          city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "At Home Group",          city: Coppell,     ats_guess: unknown,     verified: false}
+  - {name: "The Container Store",    city: Coppell,     ats_guess: workday,     verified: false}
+  - {name: "Fossil Group",           city: Richardson,  ats_guess: unknown,     verified: false}
+  - {name: "Mary Kay",               city: Addison,     ats_guess: unknown,     verified: false}
+  - {name: "Sally Beauty",           city: Denton,      ats_guess: workday,     verified: false}
+  - {name: "Interstate Batteries",   city: Dallas,      ats_guess: unknown,     verified: false}
+  - {name: "Brinker Intl (Chili's)", city: Dallas,      ats_guess: workday,     verified: false}
+  - {name: "Epsilon (Publicis)",     city: Irving,      ats_guess: unknown,     verified: false}
+  - {name: "Goldman Sachs (Dallas)", city: Dallas,      ats_guess: proprietary, verified: false}
+  - {name: "JPMorgan Chase (Plano)", city: Plano,       ats_guess: proprietary, verified: false}
+  - {name: "Wells Fargo (Irving)",   city: Irving,      ats_guess: proprietary, verified: false}
+
+# ---- Dallas product-design agencies (portfolio-first; small custom boards) ----
+  - {name: "projekt202",             city: Dallas,      ats_guess: unknown,     verified: false}
+  - {name: "Bottle Rocket",          city: Addison,     ats_guess: unknown,     verified: false}
+  - {name: "Credera",                city: Addison,     ats_guess: unknown,     verified: false}
+
+# ---- Non-DFW "never-miss" examples you named (add under companies: once verified) ----
+  - {name: "Figma",   city: "(remote/SF)",  ats_guess: unknown,  verified: false}
+  - {name: "Adobe",   city: "(remote/CA)",  ats_guess: workday,  verified: false}
+  - {name: "Salesforce", city: "(remote/CA)", ats_guess: workday, verified: false}

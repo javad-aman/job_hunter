@@ -39,7 +39,7 @@ jobs:
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
-        run: python -m jobhunt --no-ats
+        run: python -m jobhunt
 
       - name: Save seen-jobs cache
         uses: actions/cache/save@v4
