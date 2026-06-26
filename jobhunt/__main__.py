@@ -111,6 +111,12 @@ async def _run(args: argparse.Namespace) -> None:
 
         raw = await _fetch_for_location(loc, args)
 
+        # For remote-only searches, drop any posting the board didn't flag as remote
+        if loc.get("is_remote"):
+            before = len(raw)
+            raw = [p for p in raw if p.remote]
+            logger.info("[%s] Dropped %d non-remote postings", label, before - len(raw))
+
         # Drop overly senior titles if this location has exclusions defined
         exclude_kws = [k.lower() for k in loc.get("exclude_title_keywords", [])]
         if exclude_kws:
