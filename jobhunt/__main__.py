@@ -21,7 +21,7 @@ async def _fetch_for_location(
 ) -> list:
     """Run all fetchers for a single location entry."""
     from jobhunt.config import cfg
-    from jobhunt.fetchers import fetch_boards, fetch_greenhouse, fetch_lever, fetch_ashby, fetch_adzuna
+    from jobhunt.fetchers import fetch_boards, fetch_greenhouse, fetch_lever, fetch_ashby, fetch_workday, fetch_adzuna
 
     location_str: str = loc["location"]
     is_remote: bool = loc.get("is_remote", False)
@@ -48,16 +48,25 @@ async def _fetch_for_location(
         for company in cfg.companies:
             ats = company.get("ats", "").lower()
             name = company.get("name", "")
-            token = company.get("token", "")
-            if not token or token.startswith("YOUR_"):
-                logger.warning("Skipping %s — token not configured", name)
+            # Only poll this company if it targets the current location (or has no location restriction)
+            company_location = company.get("location", label)
+            if company_location != label:
                 continue
+            token = company.get("token", "")
             if ats == "greenhouse":
                 fetch_tasks.append(fetch_greenhouse(name, token, keywords))
             elif ats == "lever":
                 fetch_tasks.append(fetch_lever(name, token, keywords))
             elif ats == "ashby":
                 fetch_tasks.append(fetch_ashby(name, token, keywords))
+            elif ats == "workday":
+                host = company.get("host", "")
+                tenant = company.get("tenant", "")
+                site = company.get("site", "")
+                if host and tenant and site:
+                    fetch_tasks.append(fetch_workday(name, host, tenant, site, keywords))
+                else:
+                    logger.warning("Workday %s — missing host/tenant/site, skipping", name)
             else:
                 logger.warning("Unknown ATS type %r for %s — skipping", ats, name)
 
@@ -101,6 +110,14 @@ async def _run(args: argparse.Namespace) -> None:
         logger.info("── Processing location: %s ──────────────────────────", label.upper())
 
         raw = await _fetch_for_location(loc, args)
+
+        # Drop overly senior titles if this location has exclusions defined
+        exclude_kws = [k.lower() for k in loc.get("exclude_title_keywords", [])]
+        if exclude_kws:
+            before = len(raw)
+            raw = [p for p in raw if not any(kw in p.title.lower() for kw in exclude_kws)]
+            logger.info("[%s] Dropped %d senior/excluded titles", label, before - len(raw))
+
         normalized = normalize(raw)
         deduped = dedupe(normalized)
         logger.info("[%s] After normalize+dedupe: %d postings", label, len(deduped))

@@ -48,11 +48,45 @@ search:
 locations:
   - label: dallas
     location: "Dallas, TX"
-    is_remote: true          # also surface remote postings
+    is_remote: false    # include in-person and hybrid
+    exclude_title_keywords:
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
 
   - label: austin
     location: "Austin, TX"
     is_remote: true
+    exclude_title_keywords:
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
+
+  - label: remote
+    location: "United States"
+    is_remote: true
+    exclude_title_keywords:   # drop overly senior titles for remote search
+      - lead
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - principal
+      - staff
+      - manager
+      - chief
 
 # ── ATS keyword filter (applied to title of every posting) ───────────────────
 ats_title_keywords:
@@ -69,22 +103,33 @@ ats_title_keywords:
   - "ux research"
   - "user research"
 
-# ── Company shortlist ─────────────────────────────────────────────────────────
-# ats: greenhouse | lever | ashby
-# token: the slug used in the ATS URL (see README for how to find it)
-companies: []
-  # Add companies when you have a shortlist, e.g.:
-  # - name: "Figma"
-  #   ats: greenhouse
-  #   token: figma
-  # - name: "Notion"
-  #   ats: lever
-  #   token: notion
+# ── Company shortlist — Verified ATS pollers (Section A of dfw_watchlist.yml) ─
+# workday fields: host, tenant, site
+# lever/ashby fields: token
+companies:
+  # ---- Workday (13 verified DFW companies) — location: dallas means only polled in dallas pass ----
+  - {name: "AT&T",           ats: workday, location: dallas, host: att.wd1.myworkdayjobs.com,           tenant: att,           site: ATTGeneral}
+  - {name: "Caterpillar",    ats: workday, location: dallas, host: cat.wd5.myworkdayjobs.com,           tenant: cat,           site: CaterpillarCareers}
+  - {name: "Capital One",    ats: workday, location: dallas, host: capitalone.wd12.myworkdayjobs.com,   tenant: capitalone,    site: Capital_One}
+  - {name: "McKesson",       ats: workday, location: dallas, host: mckesson.wd3.myworkdayjobs.com,      tenant: mckesson,      site: External_Careers}
+  - {name: "Alkami",         ats: workday, location: dallas, host: alkami.wd12.myworkdayjobs.com,       tenant: alkami,        site: Alkami}
+  - {name: "Copart",         ats: workday, location: dallas, host: copart.wd12.myworkdayjobs.com,       tenant: copart,        site: Copart}
+  - {name: "Kimberly-Clark", ats: workday, location: dallas, host: kimberlyclark.wd1.myworkdayjobs.com, tenant: kimberlyclark, site: GLOBAL}
+  - {name: "Vistra",         ats: workday, location: dallas, host: vst.wd5.myworkdayjobs.com,           tenant: vst,           site: vistra_careers}
+  - {name: "GameStop",       ats: workday, location: dallas, host: gamestop.wd5.myworkdayjobs.com,      tenant: gamestop,      site: Careers}
+  - {name: "Topgolf",        ats: workday, location: dallas, host: topgolf.wd501.myworkdayjobs.com,     tenant: topgolf,       site: TopgolfCareers}
+  - {name: "Atmos Energy",   ats: workday, location: dallas, host: atmosenergy.wd5.myworkdayjobs.com,   tenant: atmosenergy,   site: External_Career_Site}
+  - {name: "RTX (Raytheon)", ats: workday, location: dallas, host: globalhr.wd5.myworkdayjobs.com,      tenant: globalhr,      site: REC_RTX_Ext_Gateway}
+  - {name: "Cinemark",       ats: workday, location: dallas, host: cinemark.wd1.myworkdayjobs.com,      tenant: cinemark,      site: cinemark}
+  # ---- Lever ----
+  - {name: "Match Group",    ats: lever,   location: dallas, token: matchgroup}
+  # ---- Ashby ----
+  - {name: "Bestow",         ats: ashby,   location: dallas, token: bestow}
 
 # ── Digest settings ───────────────────────────────────────────────────────────
 digest:
   top_n: 30                 # how many jobs to include per digest
-  min_score: 40             # drop postings below this score
+  min_score: 60             # drop postings below this score
   output_dir: "output"      # relative to project root
 
 # ── LLM settings ─────────────────────────────────────────────────────────────

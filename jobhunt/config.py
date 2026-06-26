@@ -44,11 +44,7 @@ class Config:
         self.adzuna_app_id: str = os.getenv("ADZUNA_APP_ID", "")
         self.adzuna_app_key: str = os.getenv("ADZUNA_APP_KEY", "")
 
-        self.smtp_host: str = os.getenv("SMTP_HOST", "")
-        self.smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
-        self.smtp_user: str = os.getenv("SMTP_USER", "")
-        self.smtp_password: str = os.getenv("SMTP_PASSWORD", "")
-        self.email_from: str = os.getenv("EMAIL_FROM", "")
+        self.resend_api_key: str = os.getenv("RESEND_API_KEY", "")
         self.email_to: str = os.getenv("EMAIL_TO", "")
 
         self.output_dir: Path = _ROOT / self.digest.get("output_dir", "output")
@@ -58,9 +54,6 @@ class Config:
 
     def adzuna_configured(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)
-
-    def email_configured(self) -> bool:
-        return all([self.smtp_host, self.smtp_user, self.smtp_password, self.email_to])
 
 
 # Singleton — import and reuse

@@ -4,14 +4,17 @@ on:
   schedule:
     # 8:00 AM CST = 14:00 UTC
     - cron: "0 14 * * *"
-  workflow_dispatch:   # allow manual trigger from the Actions tab
+  workflow_dispatch:
 
 jobs:
   run-digest:
     runs-on: ubuntu-latest
 
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
         with:
@@ -21,18 +24,29 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Restore seen-jobs cache
+        uses: actions/cache@v4
+        with:
+          path: data/seen_jobs.sqlite
+          key: seen-jobs-${{ github.run_id }}
+          restore-keys: |
+            seen-jobs-
+
       - name: Run jobhunt
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
-        run: python -m jobhunt --no-ats
+        run: python -m jobhunt
+
+      - name: Save seen-jobs cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: data/seen_jobs.sqlite
+          key: seen-jobs-${{ github.run_id }}
 
       - name: Upload digest artifact
         if: always()

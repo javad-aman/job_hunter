@@ -44,14 +44,15 @@ def _matches_keywords(title: str, keywords: list[str]) -> bool:
 
 
 def _extract_description(job: dict[str, Any]) -> str:
-    """Lever stores description in a list of {header, body} dicts."""
+    raw = job.get("descriptionBody", {})
     parts = []
-    for section in job.get("descriptionBody", {}).get("descriptionBody", []):
-        if section.get("header"):
-            parts.append(f"## {section['header']}")
-        parts.append(section.get("body", ""))
+    if isinstance(raw, dict):
+        for section in raw.get("descriptionBody", []):
+            if isinstance(section, dict):
+                if section.get("header"):
+                    parts.append(f"## {section['header']}")
+                parts.append(section.get("body", ""))
     if not parts:
-        # Fall back to plain text description
         parts.append(job.get("description", ""))
     return "\n\n".join(filter(None, parts))
 
