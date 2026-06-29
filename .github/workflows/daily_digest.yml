@@ -2,8 +2,8 @@ name: Daily Job Digest
 
 on:
   schedule:
-    # 8:00 AM CST = 14:00 UTC
-    - cron: "0 14 * * *"
+    # Target ~9 AM CDT; schedule 2 h early to absorb GitHub scheduler delays
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 jobs:
