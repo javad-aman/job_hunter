@@ -136,5 +136,5 @@ digest:
 llm:
   model: "claude-haiku-4-5-20251001"   # haiku is fast + cheap for scoring
   max_tokens: 400
-  batch_size: 10            # postings scored per API call
+  batch_size: 20            # postings scored per API call
   description_max_chars: 3000  # truncate long descriptions before sending

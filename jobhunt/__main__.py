@@ -87,6 +87,7 @@ async def _run(args: argparse.Namespace) -> None:
     from jobhunt.pipeline.normalizer import normalize
     from jobhunt.pipeline.deduper import dedupe
     from jobhunt.pipeline.seen_store import SeenStore
+    from jobhunt.pipeline.prefilter import prefilter
     from jobhunt.pipeline.scorer import score_postings
     from jobhunt.output.digest import write_digest
     from jobhunt.output.email_sender import send_email
@@ -136,8 +137,9 @@ async def _run(args: argparse.Namespace) -> None:
                 logger.info("[%s] Nothing new — skipping digest", label)
                 continue
 
-            scored = await score_postings(new_postings)
-            store.mark_seen(scored)
+            to_score, skipped = prefilter(new_postings)
+            scored = await score_postings(to_score)
+            store.mark_seen(scored + skipped)
 
         md_path, csv_path = write_digest(scored, location_label=label)
         print(f"\n[{label}] Digest written:\n  {md_path}\n  {csv_path}")
