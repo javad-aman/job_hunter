@@ -60,33 +60,6 @@ locations:
       - manager
       - chief
 
-  - label: austin
-    location: "Austin, TX"
-    is_remote: true
-    exclude_title_keywords:
-      - lead
-      - director
-      - "vp "
-      - " vp"
-      - "head of"
-      - principal
-      - staff
-      - manager
-      - chief
-
-  - label: remote
-    location: "United States"
-    is_remote: true
-    exclude_title_keywords:   # drop overly senior titles for remote search
-      - lead
-      - director
-      - "vp "
-      - " vp"
-      - "head of"
-      - principal
-      - staff
-      - manager
-      - chief
 
 # ── ATS keyword filter (applied to title of every posting) ───────────────────
 ats_title_keywords:
