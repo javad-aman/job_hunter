@@ -8,7 +8,7 @@ import yaml
 from dotenv import load_dotenv
 
 _ROOT = Path(__file__).parent.parent
-_CONFIG_PATH = _ROOT / "config.yaml"
+_CONFIG_PATH = _ROOT / os.getenv("JOBHUNT_CONFIG", "config.yaml")
 
 load_dotenv(_ROOT / ".env")
 
@@ -31,6 +31,8 @@ class Config:
         self.companies: list[dict[str, str]] = raw.get("companies", [])
         self.digest: dict[str, Any] = raw["digest"]
         self.llm: dict[str, Any] = raw["llm"]
+        self.scoring: dict[str, Any] = raw.get("scoring", {})
+        self.prefilter: dict[str, Any] = raw.get("prefilter", {})
 
         # Env overrides
         if os.getenv("JOBHUNT_TOP_N"):

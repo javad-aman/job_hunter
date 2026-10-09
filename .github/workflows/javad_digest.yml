@@ -1,0 +1,73 @@
+name: Javad Data Scientist Digest
+
+on:
+  schedule:
+    # 10:00 and 15:00 America/Chicago. Cron is UTC-only, so both the CDT and
+    # CST offsets are listed; the gate step skips whichever pair is off-hour.
+    - cron: "0 15,16,20,21 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-digest-javad:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Gate on Central time (10:xx or 15:xx)
+        id: gate
+        run: |
+          hour=$(TZ=America/Chicago date +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$hour" = "10" ] || [ "$hour" = "15" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "Central hour is $hour — skipping"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.go == 'true'
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        if: steps.gate.outputs.go == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Restore seen-jobs cache (Javad)
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/cache@v4
+        with:
+          path: data/seen_jobs_javad.sqlite
+          key: seen-jobs-javad-${{ github.run_id }}
+          restore-keys: |
+            seen-jobs-javad-
+
+      - name: Run jobhunt (Javad)
+        if: steps.gate.outputs.go == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          JOBHUNT_CONFIG: config_javad.yaml
+          JOBHUNT_SEEN_DB: seen_jobs_javad.sqlite
+        run: python -m jobhunt
+
+      - name: Save seen-jobs cache (Javad)
+        if: steps.gate.outputs.go == 'true' && always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/seen_jobs_javad.sqlite
+          key: seen-jobs-javad-${{ github.run_id }}
+
+      - name: Upload digest artifact (Javad)
+        if: steps.gate.outputs.go == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-javad-${{ github.run_id }}
+          path: output_javad/
+          retention-days: 30

@@ -1,0 +1,227 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# jobhunt/config_javad.yaml  — Javad Aman (Senior / Applied Data Scientist)
+# ─────────────────────────────────────────────────────────────────────────────
+
+my_profile: |
+  Javad Aman is a Data Scientist with 6+ years of experience delivering
+  production AI/ML in finance and manufacturing, with multimillion-dollar impact
+  from forecasting and anomaly-detection systems. He is currently a Data
+  Scientist II at Caterpillar (Dallas, TX) and holds a Ph.D. in Transportation
+  Engineering (machine learning on large-scale mobility data) from SMU and an
+  M.S. from Sharif University of Technology. He is a U.S. Green Card holder
+  based in Dallas, TX.
+
+  Core expertise: forecasting at scale (CatBoost, GPBoost ensembles), anomaly
+  detection, causal inference and A/B testing, supervised and unsupervised ML,
+  NLP, and applied GenAI (RAG, agent workflows, multi-agent systems with
+  LangChain/LangGraph, vector search, LLM classification, LLM evaluation).
+  Owns the full lifecycle from ideation to production: MLOps, model monitoring,
+  drift detection, CI/CD, Snowflake, Azure (AI Foundry), AWS (SageMaker, Lambda,
+  Glue), Docker, Kubernetes. Languages/tools: Python, SQL, R, PyTorch,
+  TensorFlow, Power BI, Tableau. Mentors junior data scientists. Peer-reviewed
+  publications in transportation/ML.
+
+  Target roles: Senior / Lead / Staff Data Scientist, Applied Scientist, Machine
+  Learning Scientist, GenAI / LLM Data Scientist. Wants high compensation and
+  high-profile, well-known employers (big tech, top fintech and AI companies,
+  large enterprises) with strong data-science and ML maturity and real
+  production impact. Prefers in-house product/DS teams over body-shop
+  consulting. NOT interested in junior/entry-level roles, pure data-analyst or BI
+  roles, pure software/data/ML-infrastructure engineering roles, or sales roles.
+  Location: Dallas, TX area (hybrid or onsite) or fully remote within the U.S.
+
+search:
+  terms:
+    - "senior data scientist"
+    - "lead data scientist"
+    - "staff data scientist"
+    - "applied scientist"
+    - "machine learning scientist"
+    - "data scientist generative AI"
+  hours_old: 168
+  results_wanted: 100
+  boards:
+    - indeed
+
+locations:
+  - label: dallas
+    location: "Dallas, TX"
+    is_remote: false
+    exclude_title_keywords: &exclude
+      - junior
+      - "jr "
+      - "jr."
+      - intern
+      - associate
+      - entry
+      - graduate
+      - "new grad"
+      - director
+      - "vp "
+      - " vp"
+      - "head of"
+      - chief
+
+  - label: remote
+    location: "United States"
+    is_remote: true
+    exclude_title_keywords: *exclude
+    exclude_location_keywords:   # keep remote to the U.S. only
+      - india
+      - singapore
+      - brazil
+      - "uk -"
+      - "uk,"
+      - "united kingdom"
+      - london
+      - canada
+      - toronto
+      - germany
+      - berlin
+      - ireland
+      - dublin
+      - australia
+      - sydney
+      - mexico
+      - japan
+      - tokyo
+      - poland
+      - spain
+      - france
+      - paris
+      - netherlands
+      - amsterdam
+      - israel
+      - europe
+      - emea
+      - apac
+      - latam
+      - argentina
+      - colombia
+      - korea
+      - china
+      - philippines
+
+ats_title_keywords:
+  - scientist
+  - "data science"
+  - "applied ai"
+  - "applied ml"
+  - "machine learning"
+  - genai
+  - "generative ai"
+
+# ── Company shortlist ─────────────────────────────────────────────────────────
+# Remote-pass companies are filtered to remote postings only.
+# Dallas-pass companies are DFW employers (Workday boards already verified).
+companies:
+  # ---- Dallas / DFW enterprise (Workday) ----
+  - {name: "AT&T",           ats: workday, location: dallas, host: att.wd1.myworkdayjobs.com,           tenant: att,           site: ATTGeneral}
+  - {name: "Capital One",    ats: workday, location: dallas, host: capitalone.wd12.myworkdayjobs.com,   tenant: capitalone,    site: Capital_One}
+  - {name: "Caterpillar",    ats: workday, location: dallas, host: cat.wd5.myworkdayjobs.com,           tenant: cat,           site: CaterpillarCareers}
+  - {name: "McKesson",       ats: workday, location: dallas, host: mckesson.wd3.myworkdayjobs.com,      tenant: mckesson,      site: External_Careers}
+  - {name: "Kimberly-Clark", ats: workday, location: dallas, host: kimberlyclark.wd1.myworkdayjobs.com, tenant: kimberlyclark, site: GLOBAL}
+  - {name: "RTX (Raytheon)", ats: workday, location: dallas, host: globalhr.wd5.myworkdayjobs.com,      tenant: globalhr,      site: REC_RTX_Ext_Gateway}
+  - {name: "Vistra",         ats: workday, location: dallas, host: vst.wd5.myworkdayjobs.com,           tenant: vst,           site: vistra_careers}
+  # ---- Remote: big tech / fintech / AI (Greenhouse) ----
+  - {name: "Stripe",         ats: greenhouse, location: remote, token: stripe}
+  - {name: "Databricks",     ats: greenhouse, location: remote, token: databricks}
+  - {name: "Anthropic",      ats: greenhouse, location: remote, token: anthropic}
+  - {name: "Airbnb",         ats: greenhouse, location: remote, token: airbnb}
+  - {name: "Coinbase",       ats: greenhouse, location: remote, token: coinbase}
+  - {name: "Robinhood",      ats: greenhouse, location: remote, token: robinhood}
+  - {name: "Pinterest",      ats: greenhouse, location: remote, token: pinterest}
+  - {name: "Lyft",           ats: greenhouse, location: remote, token: lyft}
+  - {name: "Datadog",        ats: greenhouse, location: remote, token: datadog}
+  - {name: "Cloudflare",     ats: greenhouse, location: remote, token: cloudflare}
+  - {name: "Scale AI",       ats: greenhouse, location: remote, token: scaleai}
+  - {name: "Figma",          ats: greenhouse, location: remote, token: figma}
+  - {name: "Instacart",      ats: greenhouse, location: remote, token: instacart}
+  - {name: "Reddit",         ats: greenhouse, location: remote, token: reddit}
+  - {name: "Affirm",         ats: greenhouse, location: remote, token: affirm}
+  - {name: "Brex",           ats: greenhouse, location: remote, token: brex}
+  - {name: "MongoDB",        ats: greenhouse, location: remote, token: mongodb}
+  - {name: "Roblox",         ats: greenhouse, location: remote, token: roblox}
+  - {name: "Samsara",        ats: greenhouse, location: remote, token: samsara}
+  - {name: "Discord",        ats: greenhouse, location: remote, token: discord}
+  # ---- Remote: Lever ----
+  - {name: "Palantir",       ats: lever,  location: remote, token: palantir}
+  - {name: "Spotify",        ats: lever,  location: remote, token: spotify}
+  # ---- Remote: Ashby ----
+  - {name: "OpenAI",         ats: ashby,  location: remote, token: openai}
+  - {name: "Ramp",           ats: ashby,  location: remote, token: ramp}
+  - {name: "Snowflake",      ats: ashby,  location: remote, token: snowflake}
+  - {name: "Cohere",         ats: ashby,  location: remote, token: cohere}
+  - {name: "Perplexity",     ats: ashby,  location: remote, token: perplexity}
+  - {name: "Sierra",         ats: ashby,  location: remote, token: sierra}
+  - {name: "Harvey",         ats: ashby,  location: remote, token: harvey}
+  - {name: "Notion",         ats: ashby,  location: remote, token: notion}
+
+digest:
+  top_n: 30
+  min_score: 65
+  output_dir: "output_javad"
+
+# ── Scoring rubric (replaces the built-in UX-designer rubric) ────────────────
+scoring:
+  role_label: "Senior / Applied Data Scientist (high-compensation, high-profile employers)"
+  rules: |
+    - If the title is Data Analyst, BI Analyst, Business Analyst, Data Engineer, ML/AI Engineer,
+      Software Engineer, DevOps, Product Manager, Program Manager, Sales, or Recruiter:
+      score 0–20 unless the description clearly makes it a modeling/science role.
+    - Junior, entry-level, intern, new-grad, or "Data Scientist I" roles: score 0–25.
+    - Director/VP/Head-of roles (people management with no hands-on modeling): score 20–40.
+    - Mid-level Data Scientist (2–4 yrs required, no senior/lead scope): cap at 55.
+    - Senior / Lead / Staff / Principal Data Scientist, Applied Scientist, ML Scientist,
+      or GenAI/LLM Data Scientist with ownership of production models: score 70–100.
+    - Add up to +10 for a high-profile employer (big tech, top fintech/AI lab, Fortune 500
+      with mature DS org) and +5 for stated compensation that looks senior (roughly $180k+
+      base or $250k+ total); subtract up to 10 for unknown/low-profile staffing or
+      consulting body shops and for postings with obvious below-senior pay.
+    - Strong overlap with the candidate's strengths (forecasting, anomaly detection,
+      causal inference/experimentation, GenAI/RAG/agents, MLOps) raises the score;
+      pure computer-vision, robotics, or research-only roles needing a different
+      specialty lower it. Fully remote U.S. or Dallas-area only; other cities lose 25.
+
+prefilter:
+  skip_title_keywords:
+    - "software engineer"
+    - "swe"
+    - "data engineer"
+    - "ml engineer"
+    - "ai engineer"
+    - "machine learning engineer"
+    - "devops"
+    - "backend"
+    - "frontend"
+    - "full stack"
+    - "full-stack"
+    - "fullstack"
+    - "site reliability"
+    - "sre "
+    - "data analyst"
+    - "business analyst"
+    - "bi analyst"
+    - "product manager"
+    - "program manager"
+    - "project manager"
+    - "scrum master"
+    - "solutions architect"
+    - "sales engineer"
+    - "account executive"
+    - "account manager"
+    - "recruiter"
+    - "hr "
+    - "human resources"
+    - "marketing"
+    - "designer"
+    - "ux "
+    - "engineering manager"
+    - "fellow"
+    - "systems engineer"
+
+llm:
+  model: "claude-haiku-4-5-20251001"
+  max_tokens: 400
+  batch_size: 20
+  description_max_chars: 3000

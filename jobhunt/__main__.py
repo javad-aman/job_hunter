@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
+import os
 import sys
 
 logging.basicConfig(
@@ -104,7 +105,8 @@ async def _run(args: argparse.Namespace) -> None:
             logger.error("No location with label %r found in config", args.location)
             return
 
-    db_path = cfg.data_dir / "seen_jobs.sqlite"
+    db_name = os.getenv("JOBHUNT_SEEN_DB", "seen_jobs.sqlite")
+    db_path = cfg.data_dir / db_name
 
     for loc in locations:
         label = loc.get("label", loc["location"])
@@ -117,6 +119,13 @@ async def _run(args: argparse.Namespace) -> None:
             before = len(raw)
             raw = [p for p in raw if p.remote]
             logger.info("[%s] Dropped %d non-remote postings", label, before - len(raw))
+
+        # Drop postings whose location mentions an excluded place (e.g. non-US remote)
+        exclude_locs = [k.lower() for k in loc.get("exclude_location_keywords", [])]
+        if exclude_locs:
+            before = len(raw)
+            raw = [p for p in raw if not any(kw in p.location.lower() for kw in exclude_locs)]
+            logger.info("[%s] Dropped %d postings in excluded locations", label, before - len(raw))
 
         # Drop overly senior titles if this location has exclusions defined
         exclude_kws = [k.lower() for k in loc.get("exclude_title_keywords", [])]

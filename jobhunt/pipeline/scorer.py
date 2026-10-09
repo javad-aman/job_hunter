@@ -22,6 +22,18 @@ logger = logging.getLogger(__name__)
 _JSON_FENCE_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
 
 
+_DEFAULT_ROLE_LABEL = "UI/UX / Product Designer"
+
+_DEFAULT_RULES = """- If the job title is Software Engineer, SWE, Data Engineer, ML Engineer, AI Engineer,
+  Hardware Engineer, DevOps, Backend, Frontend (pure code), or any engineering-only role:
+  score 0–15. Do not look for design tangents to justify a higher score.
+- If the job title is Product Manager, Program Manager, Project Manager, or Operations:
+  score 10–25 unless the description explicitly names UX research or design ownership.
+- If the job title is Art Director or Graphic Designer with no UX/product component: score 20–35.
+- Agency or consulting roles (not in-house product teams) lose 15 points.
+- Roles that match title AND domain AND seniority to the candidate's profile: score 65–100."""
+
+
 def _build_prompt(profile: str, batch: list[Posting]) -> str:
     listings = []
     max_chars = cfg.llm.get("description_max_chars", 3000)
@@ -35,20 +47,16 @@ def _build_prompt(profile: str, batch: list[Posting]) -> str:
             f"Description:\n{desc}"
         )
 
-    return f"""You are a strict job-fit scorer for a UI/UX / Product Designer job search.
+    role_label = cfg.scoring.get("role_label", _DEFAULT_ROLE_LABEL)
+    rules = cfg.scoring.get("rules", _DEFAULT_RULES).strip()
+
+    return f"""You are a strict job-fit scorer for a {role_label} job search.
 
 Candidate profile:
 {profile}
 
 Scoring rules — apply these BEFORE anything else:
-- If the job title is Software Engineer, SWE, Data Engineer, ML Engineer, AI Engineer,
-  Hardware Engineer, DevOps, Backend, Frontend (pure code), or any engineering-only role:
-  score 0–15. Do not look for design tangents to justify a higher score.
-- If the job title is Product Manager, Program Manager, Project Manager, or Operations:
-  score 10–25 unless the description explicitly names UX research or design ownership.
-- If the job title is Art Director or Graphic Designer with no UX/product component: score 20–35.
-- Agency or consulting roles (not in-house product teams) lose 15 points.
-- Roles that match title AND domain AND seniority to the candidate's profile: score 65–100.
+{rules}
 
 Score each of the {len(batch)} job postings below on a 0-100 scale.
 Return ONLY a JSON array with one object per posting, in the same order, each with:
